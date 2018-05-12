@@ -57,7 +57,7 @@ public class MovimentacaoDao {
 					.setParameter("conta", conta)
 					.getResultList();
 	}
-
+	
 	public List<Movimentacao> listarPorValorETipo(BigDecimal valor, TipoMovimentacao tipoMovimentacao) {
 		
 		StringBuilder strQuery = new StringBuilder();
@@ -75,6 +75,41 @@ public class MovimentacaoDao {
 					.setParameter("valor", valor)
 					.setParameter("tipo", tipoMovimentacao)
 					.getResultList();
+	}
+
+	public BigDecimal calculaTotalMovimentado(Conta conta, TipoMovimentacao tipoMovimentacao) {
+		
+		StringBuilder strQuery = new StringBuilder();
+		strQuery.append(" SELECT						");
+		strQuery.append(" 	SUM(m.valor)				");
+		strQuery.append(" FROM							");
+		strQuery.append(" 	Movimentacao m 				");
+		strQuery.append(" WHERE 						");
+		strQuery.append(" 	m.conta <= :conta			");
+		strQuery.append(" AND							");
+		strQuery.append(" 	m.tipoMovimentacao = :tipo	");
+		
+		return manager
+				.createQuery(strQuery.toString(), BigDecimal.class)
+				.setParameter("conta", conta)
+				.setParameter("tipo", tipoMovimentacao)
+				.getSingleResult();
+	}
+
+	public List<Movimentacao> buscaTodasAsMovimentacoesDaConta(String titular) {
+		
+		StringBuilder strQuery = new StringBuilder();
+		strQuery.append(" SELECT							");
+		strQuery.append(" 	m								");
+		strQuery.append(" FROM								");
+		strQuery.append(" 	Movimentacao m 					");
+		strQuery.append(" WHERE 							");
+		strQuery.append(" 	m.conta.titular LIKE :titular	");
+		
+		return manager
+				.createQuery(strQuery.toString(), Movimentacao.class)
+				.setParameter("titular", "%".concat(titular).concat("%"))
+				.getResultList();
 	}
 
 }
