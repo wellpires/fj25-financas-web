@@ -1,6 +1,7 @@
 package br.com.caelum.financas.mb;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -9,8 +10,10 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import br.com.caelum.financas.dao.CategoriaDao;
 import br.com.caelum.financas.dao.ContaDao;
 import br.com.caelum.financas.dao.MovimentacaoDao;
+import br.com.caelum.financas.modelo.Categoria;
 import br.com.caelum.financas.modelo.Conta;
 import br.com.caelum.financas.modelo.Movimentacao;
 import br.com.caelum.financas.modelo.TipoMovimentacao;
@@ -27,10 +30,15 @@ public class MovimentacoesBean implements Serializable {
 	@Inject
 	private ContaDao contaDao;
 	
+	@Inject
+	private CategoriaDao categoriaDao;
+	
 	private List<Movimentacao> movimentacoes;
 	private Movimentacao movimentacao = new Movimentacao();
 	private Integer contaId;
 	private Integer categoriaId;
+	
+	private List<Categoria> categorias;
 	
 	
 	public void grava() {
@@ -49,6 +57,13 @@ public class MovimentacoesBean implements Serializable {
 		movimentacaoDao.remove(movimentacao);
 		this.movimentacoes = movimentacaoDao.lista();
 		limpaFormularioDoJSF();
+	}
+	
+	public void adicionaCategoria(){
+		if(Objects.nonNull(categoriaId) && categoriaId > BigDecimal.ZERO.intValue()){
+			Categoria categoria = categoriaDao.busca(categoriaId);
+			movimentacao.getCategorias().add(categoria);
+		}
 	}
 
 	public List<Movimentacao> getMovimentacoes() {
@@ -85,6 +100,20 @@ public class MovimentacoesBean implements Serializable {
 	public void setCategoriaId(Integer categoriaId) {
 		this.categoriaId = categoriaId;
 	}
+
+	public List<Categoria> getCategorias() {
+		if(Objects.isNull(categorias)){
+			System.out.println("Listando as categorias");
+			categorias = categoriaDao.lista();
+		}
+		return categorias;
+	}
+
+
+	public void setCategorias(List<Categoria> categorias) {
+		this.categorias = categorias;
+	}
+
 
 	/**
 	 * Esse metodo apenas limpa o formulario da forma com que o JSF espera.

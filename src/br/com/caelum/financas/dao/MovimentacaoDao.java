@@ -11,6 +11,7 @@ import br.com.caelum.financas.exception.ValorInvalidoException;
 import br.com.caelum.financas.modelo.Conta;
 import br.com.caelum.financas.modelo.Movimentacao;
 import br.com.caelum.financas.modelo.TipoMovimentacao;
+import br.com.caelum.financas.modelo.ValorPorMesEAno;
 
 @Stateless
 public class MovimentacaoDao {
@@ -109,6 +110,27 @@ public class MovimentacaoDao {
 		return manager
 				.createQuery(strQuery.toString(), Movimentacao.class)
 				.setParameter("titular", "%".concat(titular).concat("%"))
+				.getResultList();
+	}
+
+	public List<ValorPorMesEAno> listaMesesComMovimentacoes(Conta conta, TipoMovimentacao tipoMovimentacao) {
+		
+		StringBuilder strQuery = new StringBuilder();
+		strQuery.append(" SELECT																							");
+		strQuery.append(" 	new br.com.caelum.financas.modelo.ValorPorMesEAno(year(m.data), month(m.data), SUM(m.valor))	");
+		strQuery.append(" FROM																								");
+		strQuery.append(" 	Movimentacao m 																					");
+		strQuery.append(" WHERE 																							");
+		strQuery.append(" 	m.conta = :conta AND																			");
+		strQuery.append(" 	m.tipoMovimentacao = :tipo																		");
+		strQuery.append(" GROUP BY																							");
+		strQuery.append(" 	year(m.data), month(m.data)																		");
+		strQuery.append(" ORDER BY																							");
+		strQuery.append(" 	SUM(m.valor) DESC																				");
+		
+		return manager.createQuery(strQuery.toString(), ValorPorMesEAno.class)
+				.setParameter("conta", conta)
+				.setParameter("tipo", tipoMovimentacao)
 				.getResultList();
 	}
 

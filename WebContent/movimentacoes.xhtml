@@ -46,8 +46,8 @@
 						<f:converter converterId="localDateTimeConverter" />
 					</h:inputText>
 
-					<h:outputText value="Categorias" rendered="false" />
-					<h:panelGroup rendered="false">
+					<h:outputText value="Categorias" rendered="true" />
+					<h:panelGroup rendered="true">
 						<h:selectOneMenu value="#{movimentacoesBean.categoriaId}"
 							id="selectCategoria">
 							<f:selectItem itemLabel="Escolha a Categoria" itemValue=""
@@ -57,7 +57,7 @@
 								itemLabel="#{categoria.nome}" />
 						</h:selectOneMenu>
 						<h:commandButton value="+"
-							action="#{movimentacoesBean.adicionaCategoria}">
+							actionListener="#{movimentacoesBean.adicionaCategoria}">
 							<f:ajax execute="selectCategoria" render="tblCategoria" />
 						</h:commandButton>
 						<h:dataTable value="#{movimentacoesBean.movimentacao.categorias}"
