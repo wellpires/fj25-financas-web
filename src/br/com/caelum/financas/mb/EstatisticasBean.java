@@ -1,6 +1,7 @@
 package br.com.caelum.financas.mb;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
@@ -17,7 +18,7 @@ public class EstatisticasBean {
 
 	private Statistics estatisticas;
 
-	public void gera() {
+	public void gera(ActionEvent ae) {
 		System.out.println("Gerando estatísticas");
 
 		Session session = this.manager.unwrap(Session.class);

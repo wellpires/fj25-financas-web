@@ -11,7 +11,6 @@ import br.com.caelum.financas.modelo.Conta;
 @Stateless
 public class ContaDao {
 
-//	@PersistenceContext
 	@Inject
 	private EntityManager manager;
 
@@ -22,13 +21,7 @@ public class ContaDao {
 
 	public void altera(Conta conta){
 		this.manager.joinTransaction();
-		Conta contaManaged = busca(conta.getId());
-		contaManaged.setAgencia(conta.getAgencia());
-		contaManaged.setBanco(conta.getBanco());
-		contaManaged.setNumero(conta.getNumero());
-		contaManaged.setTitular(conta.getTitular());
-		
-		this.manager.merge(contaManaged);
+		this.manager.merge(conta);
 	}
 	
 	public Conta busca(Integer id) {
