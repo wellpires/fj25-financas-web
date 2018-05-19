@@ -4,8 +4,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import br.com.caelum.financas.exception.ValorInvalidoException;
 import br.com.caelum.financas.modelo.Conta;
@@ -16,10 +17,12 @@ import br.com.caelum.financas.modelo.ValorPorMesEAno;
 @Stateless
 public class MovimentacaoDao {
 
-	@PersistenceContext
+//	@PersistenceContext
+	@Inject
 	private EntityManager manager;
 
 	public void adiciona(Movimentacao movimentacao) {
+		this.manager.joinTransaction();
 		this.manager.persist(movimentacao);
 		
 		if(movimentacao.getValor().compareTo(BigDecimal.ZERO) < 0){
@@ -37,6 +40,7 @@ public class MovimentacaoDao {
 	}
 
 	public void remove(Movimentacao movimentacao) {
+		this.manager.joinTransaction();
 		Movimentacao movimentacaoParaRemover = this.manager.find(Movimentacao.class, movimentacao.getId());
 		this.manager.remove(movimentacaoParaRemover);
 	}
@@ -71,11 +75,12 @@ public class MovimentacaoDao {
 		strQuery.append(" AND							");
 		strQuery.append(" 	m.tipoMovimentacao = :tipo	");
 		
-		return manager
-					.createQuery(strQuery.toString(), Movimentacao.class)
-					.setParameter("valor", valor)
-					.setParameter("tipo", tipoMovimentacao)
-					.getResultList();
+		TypedQuery<Movimentacao> query = manager.createQuery(strQuery.toString(), Movimentacao.class);
+		query.setParameter("valor", valor);
+		query.setParameter("tipo", tipoMovimentacao);
+		query.setHint("org.hibernate.cacheable", "true");
+		
+		return query.getResultList();
 	}
 
 	public BigDecimal calculaTotalMovimentado(Conta conta, TipoMovimentacao tipoMovimentacao) {
@@ -131,6 +136,20 @@ public class MovimentacaoDao {
 		return manager.createQuery(strQuery.toString(), ValorPorMesEAno.class)
 				.setParameter("conta", conta)
 				.setParameter("tipo", tipoMovimentacao)
+				.getResultList();
+	}
+
+	public List<Movimentacao> listaComCategorias() {
+
+		StringBuilder strQuery = new StringBuilder();
+		strQuery.append("SELECT				");
+		strQuery.append("	DISTINCT m		");
+		strQuery.append("FROM				");
+		strQuery.append("	Movimentacao m	");
+		strQuery.append("LEFT JOIN FETCH	");
+		strQuery.append("	m.categorias	");
+		
+		return manager.createQuery(strQuery.toString(), Movimentacao.class)
 				.getResultList();
 	}
 

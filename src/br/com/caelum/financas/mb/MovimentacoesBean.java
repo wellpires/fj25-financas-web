@@ -47,7 +47,7 @@ public class MovimentacoesBean implements Serializable {
 		movimentacao.setConta(conta);
 		
 		movimentacaoDao.adiciona(movimentacao);
-		this.movimentacoes = movimentacaoDao.lista();
+		this.movimentacoes = movimentacaoDao.listaComCategorias();
 		limpaFormularioDoJSF();
 	}
 	
@@ -55,7 +55,7 @@ public class MovimentacoesBean implements Serializable {
 	public void remove() {
 		System.out.println("Removendo a movimentacao");
 		movimentacaoDao.remove(movimentacao);
-		this.movimentacoes = movimentacaoDao.lista();
+		this.movimentacoes = movimentacaoDao.listaComCategorias();
 		limpaFormularioDoJSF();
 	}
 	
