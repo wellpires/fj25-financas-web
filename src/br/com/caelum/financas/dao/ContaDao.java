@@ -39,6 +39,23 @@ public class ContaDao {
 		this.manager.remove(contaParaRemover);
 	}
 
+	public int trocaNomeDoBancoEmLote(String antigoNomeBanco, String novoNomeBanco){
+		
+		StringBuilder strQuery = new StringBuilder();
+		strQuery.append(" UPDATE					");
+		strQuery.append(" 	Conta c					");
+		strQuery.append(" SET						");
+		strQuery.append(" 	c.banco = :novoNome		");
+		strQuery.append(" WHERE						");
+		strQuery.append(" 	c.banco = :antigoNome	");
+		
+		return this.manager.createQuery(strQuery.toString())
+					.setParameter("novoNome", novoNomeBanco)
+					.setParameter("antigoNome", antigoNomeBanco)
+					.executeUpdate();
+		
+	}
+	
 }
 
 

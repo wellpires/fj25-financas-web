@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.DecimalMin;
 
 @Entity
 @Cacheable
@@ -24,6 +25,8 @@ public class Movimentacao {
 	private Integer id;
 	private String descricao;
 	private LocalDateTime data;
+	
+	@DecimalMin(value = "0.01", message="Deve ser pelo menos 1 centavos")
 	private BigDecimal valor;
 
 	@ManyToOne

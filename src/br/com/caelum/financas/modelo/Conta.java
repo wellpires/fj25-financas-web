@@ -3,26 +3,45 @@ package br.com.caelum.financas.modelo;
 import java.util.List;
 
 import javax.persistence.Cacheable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import br.com.caelum.financas.validator.NumeroEAgencia;
+
 @Entity
 @Cacheable
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "agencia", "numero" }) })
+@NumeroEAgencia
 public class Conta {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+
+	@NotNull
+	@Pattern(regexp = "[A-Z].*")
 	private String titular;
 	private String agencia;
 	private String numero;
+
+	@Column(length = 20, nullable = false)
+	@Size(min = 3, max = 20)
+	@NotNull
 	private String banco;
 
 	@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
@@ -31,6 +50,10 @@ public class Conta {
 
 	@Version
 	private Integer versao;
+
+	@OneToOne
+	@JoinColumn(unique = true)
+	private Gerente gerente;
 
 	public Integer getId() {
 		return id;
@@ -86,6 +109,14 @@ public class Conta {
 
 	public void setVersao(Integer versao) {
 		this.versao = versao;
+	}
+
+	public Gerente getGerente() {
+		return gerente;
+	}
+
+	public void setGerente(Gerente gerente) {
+		this.gerente = gerente;
 	}
 
 }

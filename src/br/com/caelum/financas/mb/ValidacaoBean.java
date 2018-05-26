@@ -3,8 +3,14 @@ package br.com.caelum.financas.mb;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+
 import br.com.caelum.financas.modelo.Conta;
+
+import java.util.Set;
+
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
@@ -13,9 +19,14 @@ public class ValidacaoBean {
 
 	private Conta conta = new Conta();
 	
+	@Inject
+	private Validator validator;
 
 	public void validar() {
 		System.out.println("Validando a conta");
+		
+		Set<ConstraintViolation<Conta>> errors = validator.validate(conta);
+		errors.stream().forEach(this::geraMensagemJsf);
 		
 	}
 	
